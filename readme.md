@@ -1,7 +1,7 @@
 # Личный проект «Типотека» [![Build status][travis-image]][travis-url]
 
 * Студент: [Евгений Филатов](https://up.htmlacademy.ru/nodejs/3/user/68634).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Карагодин](https://htmlacademy.ru/profile/ekaragodin).
 
 ---
 
