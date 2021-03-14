@@ -1,6 +1,7 @@
 "use strict";
 
-const fs = require(`fs`);
+const fs = require(`fs`).promises;
+const chalk = require(`chalk`);
 const dayjs = require(`dayjs`);
 const {
   getRandomInt,
@@ -100,7 +101,7 @@ const generateArticles = (count) => Array(count).fill({}).map(generateArticle);
 
 module.exports = {
   name: `--generate`,
-  run(args) {
+  async run(args) {
     let [count] = args;
     count = Number.parseInt(count, 10) || DEFAULT_COUNT;
     if (count > MAX_COUNT) {
@@ -109,13 +110,14 @@ module.exports = {
     }
     const data = JSON.stringify(generateArticles(count));
 
-    fs.writeFile(FILE_NAME, data, (err) => {
-      if (err) {
-        console.error(`Не удалось записать данные в файл...`);
-        process.exit(ExitCode.fail);
-      }
-      console.info(`Операция выполнена. Файл создан.`);
+    try {
+      await fs.writeFile(FILE_NAME, data);
+      console.info(chalk.green(`Операция выполнена. Файл создан.`));
       process.exit(ExitCode.success);
-    });
+    } catch (err) {
+      console.error(chalk.red(`Не удалось записать данные в файл...`));
+      console.log(chalk.red(err));
+      process.exit(ExitCode.fail);
+    }
   },
 };
