@@ -1,6 +1,7 @@
 "use strict";
 
 const fs = require(`fs`).promises;
+const path = require(`path`);
 const chalk = require(`chalk`);
 const dayjs = require(`dayjs`);
 const {
@@ -15,55 +16,18 @@ const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
 const FILE_NAME = `mocks.json`;
 
-const TITLES = [
-  `Ёлки. История деревьев`,
-  `Как перестать беспокоиться и начать жить`,
-  `Как достигнуть успеха не вставая с кресла`,
-  `Обзор новейшего смартфона`,
-  `Лучшие рок-музыканты 20-века`,
-  `Как начать программировать`,
-  `Учим HTML и CSS`,
-  `Что такое золотое сечение`,
-  `Как собрать камни бесконечности`,
-  `Борьба с прокрастинацией`,
-  `Рок — это протест`,
-  `Самый лучший музыкальный альбом этого года`,
-];
+const FILE_TITLES_PATH = path.join(__dirname, `../../../data/titles.txt`);
+const FILE_SENTENCES_PATH = path.join(__dirname, `../../../data/sentences.txt`);
+const FILE_CATEGORIES_PATH = path.join(__dirname, `../../../data/categories.txt`);
 
-const SENTENCES = [
-  `Ёлки — это не просто красивое дерево. Это прочная древесина.`,
-  `Первая большая ёлка была установлена только в 1938 году.`,
-  `Вы можете достичь всего. Стоит только немного постараться и запастись книгами.`,
-  `Этот смартфон — настоящая находка. Большой и яркий экран, мощнейший процессор — всё это в небольшом гаджете.`,
-  `Золотое сечение — соотношение двух величин, гармоническая пропорция.`,
-  `Собрать камни бесконечности легко, если вы прирожденный герой.`,
-  `Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике.`,
-  `Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами.`,
-  `Программировать не настолько сложно, как об этом говорят.`,
-  `Простые ежедневные упражнения помогут достичь успеха.`,
-  `Это один из лучших рок-музыкантов.`,
-  `Он написал больше 30 хитов.`,
-  `Из под его пера вышло 8 платиновых альбомов.`,
-  `Процессор заслуживает особого внимания. Он обязательно понравится геймерам со стажем.`,
-  `Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле?`,
-  `Достичь успеха помогут ежедневные повторения.`,
-  `Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много.`,
-  `Как начать действовать? Для начала просто соберитесь.`,
-  `Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравятся только игры.`,
-  `Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать.`,
-];
-
-const CATEGORIES = [
-  `Деревья`,
-  `За жизнь`,
-  `Без рамки`,
-  `Разное`,
-  `IT`,
-  `Музыка`,
-  `Кино`,
-  `Программирование`,
-  `Железо`,
-];
+const readContent = async (filePath) => {
+  try {
+    const content = await fs.readFile(filePath, `utf-8`);
+    return content.split(`\n`);
+  } catch (err) {
+    throw new Error(`Отсутствует файл или папка по пути: '${err.path}'`);
+  }
+};
 
 const generateDate = () => {
   const earliestDate = dayjs().month(-2).date(1).hour(0).minute(0).second(0);
@@ -73,15 +37,15 @@ const generateDate = () => {
   return result.format(`YYYY-MM-DD HH:mm:ss`);
 };
 
-const generateAnnounce = (count) =>
-  shuffleArray(SENTENCES).slice(0, count).join(` `);
+const generateAnnounce = (count, sentences) =>
+  shuffleArray(sentences).slice(0, count).join(` `);
 
-const generateFullText = () =>
-  shuffleArray(SENTENCES).slice(0, getRandomInt(5, SENTENCES.length)).join(` `);
+const generateFullText = (sentences) =>
+  shuffleArray(sentences).slice(0, getRandomInt(5, 12)).join(` `);
 
-const generateCategory = (count) => {
+const generateCategory = (count, allCategories) => {
   const categories = [];
-  const copy = CATEGORIES.slice();
+  const copy = allCategories.slice();
   for (let i = 0; i < count; i++) {
     const randomIndex = getRandomInt(0, copy.length - 1);
     categories.push(copy.splice(randomIndex, 1)[0]);
@@ -89,26 +53,42 @@ const generateCategory = (count) => {
   return categories;
 };
 
-const generateArticle = () => ({
-  title: getArrayRandomElement(TITLES),
+const generateArticle = ({titles, sentences, categories}) => ({
+  title: getArrayRandomElement(titles),
   createdDate: generateDate(),
-  announce: generateAnnounce(getRandomInt(2, 5)),
-  fullText: generateFullText(),
-  сategory: generateCategory(getRandomInt(1, 3)),
+  announce: generateAnnounce(getRandomInt(2, 5), sentences),
+  fullText: generateFullText(sentences),
+  сategory: generateCategory(getRandomInt(1, 3), categories),
 });
 
-const generateArticles = (count) => Array(count).fill({}).map(generateArticle);
+const generateArticles = (count, mocks) => (
+  Array(count).fill({}).map(() => generateArticle(mocks))
+);
 
 module.exports = {
   name: `--generate`,
   async run(args) {
+    let mocks = null;
+    try {
+      mocks = {
+        titles: await readContent(FILE_TITLES_PATH),
+        categories: await readContent(FILE_CATEGORIES_PATH),
+        sentences: await readContent(FILE_SENTENCES_PATH),
+      };
+    } catch (err) {
+      console.error(chalk.red(err.message));
+      process.exit(ExitCode.fail);
+    }
+
+
     let [count] = args;
     count = Number.parseInt(count, 10) || DEFAULT_COUNT;
+    count = count <= 0 ? DEFAULT_COUNT : count;
     if (count > MAX_COUNT) {
       console.error(`Не больше ${MAX_COUNT} публикаций.`);
       process.exit(ExitCode.fail);
     }
-    const data = JSON.stringify(generateArticles(count));
+    const data = JSON.stringify(generateArticles(count, mocks));
 
     try {
       await fs.writeFile(FILE_NAME, data);
