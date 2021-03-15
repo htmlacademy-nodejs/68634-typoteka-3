@@ -85,7 +85,7 @@ module.exports = {
     count = Number.parseInt(count, 10) || DEFAULT_COUNT;
     count = count <= 0 ? DEFAULT_COUNT : count;
     if (count > MAX_COUNT) {
-      console.error(`Не больше ${MAX_COUNT} публикаций.`);
+      console.error(chalk.red(`Не больше ${MAX_COUNT} публикаций.`));
       process.exit(ExitCode.fail);
     }
     const data = JSON.stringify(generateArticles(count, mocks));
