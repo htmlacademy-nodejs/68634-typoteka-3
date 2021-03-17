@@ -9,7 +9,8 @@
     "eslint": "eslint --ext .js src/",
     "eslint-fix": "eslint --ext .js src/ --fix",
     "start": "node ./src/service/service.js",
-    "server": "nodemon ./src/service/servive.js --server 3000"
+    "server": "nodemon ./src/service/servive.js --server 3000",
+    "start-front-server": "node ./src/express/index.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
   },
   "dependencies": {
     "chalk": "4.1.0",
-    "dayjs": "1.10.3"
+    "dayjs": "1.10.3",
+    "express": "4.17.1"
   }
 }
