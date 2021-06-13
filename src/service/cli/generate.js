@@ -9,8 +9,9 @@ const {
   shuffleArray,
   getArrayRandomElement,
 } = require(`../../utils`);
+const {nanoid} = require(`nanoid`);
 
-const {ExitCode} = require(`../../constants`);
+const {ExitCode, MAX_ID_LENGTH} = require(`../../constants`);
 
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
@@ -54,6 +55,7 @@ const generateCategory = (count, allCategories) => {
 };
 
 const generateArticle = ({titles, sentences, categories}) => ({
+  id: nanoid(MAX_ID_LENGTH),
   title: getArrayRandomElement(titles),
   createdDate: generateDate(),
   announce: generateAnnounce(getRandomInt(2, 5), sentences),
