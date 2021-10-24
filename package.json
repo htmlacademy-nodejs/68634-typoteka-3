@@ -9,7 +9,7 @@
     "eslint": "eslint --ext .js src/",
     "eslint-fix": "eslint --ext .js src/ --fix",
     "start": "node ./src/service/service.js",
-    "server": "nodemon ./src/service/service.js --server 3000",
+    "server": "nodemon ./src/service/service.js --server 3001",
     "start-front-server": "node ./src/express/index.js"
   },
   "repository": {
