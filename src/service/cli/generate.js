@@ -9,16 +9,19 @@ const {
   shuffleArray,
   getArrayRandomElement,
 } = require(`../../utils`);
+const {nanoid} = require(`nanoid`);
 
-const {ExitCode} = require(`../../constants`);
+const {ExitCode, MAX_ID_LENGTH} = require(`../../constants`);
 
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
+const MAX_COMMENTS = 3;
 const FILE_NAME = `mocks.json`;
 
 const FILE_TITLES_PATH = path.join(__dirname, `../../../data/titles.txt`);
 const FILE_SENTENCES_PATH = path.join(__dirname, `../../../data/sentences.txt`);
 const FILE_CATEGORIES_PATH = path.join(__dirname, `../../../data/categories.txt`);
+const FILE_COMMENTS_PATH = path.join(__dirname, `../../../data/comments.txt`);
 
 const readContent = async (filePath) => {
   try {
@@ -53,12 +56,23 @@ const generateCategory = (count, allCategories) => {
   return categories;
 };
 
-const generateArticle = ({titles, sentences, categories}) => ({
+const generateComments = (count, allComments) => (
+  Array(count).fill({}).map(() => ({
+    id: nanoid(MAX_ID_LENGTH),
+    text: shuffleArray(allComments)
+      .slice(0, getRandomInt(1, 3))
+      .join(` `),
+  }))
+);
+
+const generateArticle = ({titles, sentences, categories, comments}) => ({
+  id: nanoid(MAX_ID_LENGTH),
   title: getArrayRandomElement(titles),
   createdDate: generateDate(),
   announce: generateAnnounce(getRandomInt(2, 5), sentences),
   fullText: generateFullText(sentences),
   сategory: generateCategory(getRandomInt(1, 3), categories),
+  comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
 });
 
 const generateArticles = (count, mocks) => (
@@ -74,6 +88,7 @@ module.exports = {
         titles: await readContent(FILE_TITLES_PATH),
         categories: await readContent(FILE_CATEGORIES_PATH),
         sentences: await readContent(FILE_SENTENCES_PATH),
+        comments: await readContent(FILE_COMMENTS_PATH),
       };
     } catch (err) {
       console.error(chalk.red(err.message));

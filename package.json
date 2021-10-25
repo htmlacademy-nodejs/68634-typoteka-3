@@ -9,7 +9,7 @@
     "eslint": "eslint --ext .js src/",
     "eslint-fix": "eslint --ext .js src/ --fix",
     "start": "node ./src/service/service.js",
-    "server": "nodemon ./src/service/service.js --server 3000",
+    "server": "nodemon ./src/service/service.js --server 3001",
     "start-front-server": "node ./src/express/index.js"
   },
   "repository": {
@@ -31,6 +31,7 @@
     "chalk": "4.1.0",
     "dayjs": "1.10.3",
     "express": "4.17.1",
+    "nanoid": "3.1.23",
     "pug": "2.0.4"
   }
 }
