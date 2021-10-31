@@ -71,7 +71,7 @@ const generateArticle = ({titles, sentences, categories, comments}) => ({
   createdDate: generateDate(),
   announce: generateAnnounce(getRandomInt(2, 5), sentences),
   fullText: generateFullText(sentences),
-  сategory: generateCategory(getRandomInt(1, 3), categories),
+  category: generateCategory(getRandomInt(1, 3), categories),
   comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
 });
 
