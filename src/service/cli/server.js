@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require(`express`);
-const {HttpCode} = require(`../../constants`);
+const {HttpCode, ExitCode} = require(`../../constants`);
 
 const app = express();
 app.use(express.json());
@@ -42,7 +42,7 @@ module.exports = {
 
     } catch (err) {
       logger.error(`An error occurred: ${err.message}`);
-      process.exit(1);
+      process.exit(ExitCode.FAIL);
     }
 
     app.use((req, res) => {

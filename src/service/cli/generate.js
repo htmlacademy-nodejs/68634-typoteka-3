@@ -92,7 +92,7 @@ module.exports = {
       };
     } catch (err) {
       console.error(chalk.red(err.message));
-      process.exit(ExitCode.fail);
+      process.exit(ExitCode.FAIL);
     }
 
 
@@ -101,18 +101,18 @@ module.exports = {
     count = count <= 0 ? DEFAULT_COUNT : count;
     if (count > MAX_COUNT) {
       console.error(chalk.red(`Не больше ${MAX_COUNT} публикаций.`));
-      process.exit(ExitCode.fail);
+      process.exit(ExitCode.FAIL);
     }
     const data = JSON.stringify(generateArticles(count, mocks));
 
     try {
       await fs.writeFile(FILE_NAME, data);
       console.info(chalk.green(`Операция выполнена. Файл создан.`));
-      process.exit(ExitCode.success);
+      process.exit(ExitCode.SUCCESS);
     } catch (err) {
       console.error(chalk.red(`Не удалось записать данные в файл...`));
       console.log(chalk.red(err));
-      process.exit(ExitCode.fail);
+      process.exit(ExitCode.FAIL);
     }
   },
 };

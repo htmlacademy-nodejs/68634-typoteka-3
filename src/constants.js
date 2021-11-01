@@ -5,8 +5,8 @@ module.exports = {
   USER_ARGV_INDEX: 2,
   MAX_ID_LENGTH: 6,
   ExitCode: {
-    success: 0,
-    fail: 1,
+    SUCCESS: 0,
+    FAIL: 1,
   },
   HttpCode: {
     OK: 200,
