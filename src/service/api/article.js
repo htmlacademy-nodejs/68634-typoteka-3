@@ -1,18 +1,18 @@
 "use strict";
 
-const {Router} = require(`express`);
 const {HttpCode} = require(`../../constants`);
 const articleValidator = require(`../middlewares/article-validator`);
 const commentValidator = require(`../middlewares/comment-validator`);
 const articleExist = require(`../middlewares/article-exist`);
-
-const route = new Router();
+const {Router} = require(`express`);
 
 module.exports = (
     app,
     articleService,
     commentService
 ) => {
+  const route = new Router();
+
   app.use(`/articles`, route);
 
   route.get(`/`, (req, res) => {
@@ -47,7 +47,7 @@ module.exports = (
         .json(article);
   });
 
-  route.put(`/:articleId`, (req, res) => {
+  route.put(`/:articleId`, articleValidator, (req, res) => {
     const {articleId} = req.params;
     let article = articleService.findOne(articleId);
 
@@ -68,10 +68,11 @@ module.exports = (
 
     if (!deletedArticle) {
       return res.status(HttpCode.NOT_FOUND)
-        .send(`Offer with id="${articleId}" wasn't found`);
+        .send(`Article with id="${articleId}" wasn't found`);
     }
 
-    return res.sendStatus(HttpCode.NO_CONTENT);
+    return res.status(HttpCode.OK)
+      .json(deletedArticle);
   });
 
   route.get(`/:articleId/comments`, articleExist(articleService), (req, res) => {
@@ -87,18 +88,21 @@ module.exports = (
 
     commentService.create(article, comment);
 
-    return res.sendStatus(HttpCode.CREATED);
+    return res.status(HttpCode.CREATED)
+      .send(comment);
   });
 
   route.delete(`/:articleId/comments/:commentId`, articleExist(articleService), (req, res) => {
     const {article} = res.locals;
     const {commentId} = req.params;
+    const deletedComment = commentService.drop(article, commentId);
 
-    if (!commentService.drop(article, commentId)) {
+    if (!deletedComment) {
       return res.status(HttpCode.NOT_FOUND)
         .send(`There is no such comment in base`);
     }
 
-    return res.sendStatus(HttpCode.NO_CONTENT);
+    return res.status(HttpCode.OK)
+      .send(deletedComment);
   });
 };

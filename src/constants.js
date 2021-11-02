@@ -5,8 +5,8 @@ module.exports = {
   USER_ARGV_INDEX: 2,
   MAX_ID_LENGTH: 6,
   ExitCode: {
-    success: 0,
-    fail: 1,
+    SUCCESS: 0,
+    FAIL: 1,
   },
   HttpCode: {
     OK: 200,
@@ -17,5 +17,9 @@ module.exports = {
     NOT_FOUND: 404,
     FORBIDDEN: 403,
     INTERNAL_SERVER_ERROR: 500,
+  },
+  Env: {
+    DEVELOPMENT: `development`,
+    PRODUCTION: `production`
   }
 };

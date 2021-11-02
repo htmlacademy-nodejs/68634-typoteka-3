@@ -1,5 +1,4 @@
 "use strict";
-
 class CategoryService {
   constructor(articles) {
     this._articles = articles;
